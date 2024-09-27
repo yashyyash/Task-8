@@ -1,0 +1,60 @@
+name: Deploy Medusa on ECS Fargate Spot
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: "us-east-1" # Update as per your region
+  ECR_REPOSITORY: "medusa-ecr-repo"
+  CLUSTER_NAME: "medusa-cluster"
+  SERVICE_NAME: "medusa-service"
+  TASK_FAMILY: "medusa-task"
+  ECS_SERVICE_ROLE_ARN: ${{ secrets.ECS_SERVICE_ROLE_ARN8 }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID8 }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY8 }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Log in to Amazon ECR
+      id: login-ecr
+      run: |
+        aws ecr get-login-password --region ${{ env.AWS_REGION }} \
+          | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID8 }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ env.ECR_REPOSITORY }}:latest .
+        docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ secrets.AWS_ACCOUNT_ID8 }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:latest
+
+    - name: Push Docker image to Amazon ECR
+      run: |
+        docker push ${{ secrets.AWS_ACCOUNT_ID8 }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:latest
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+
+    - name: Deploy to ECS
+      run: |
+        aws ecs update-service --cluster ${{ env.CLUSTER_NAME }} --service ${{ env.SERVICE_NAME }} --force-new-deployment

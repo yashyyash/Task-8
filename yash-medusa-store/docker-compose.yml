@@ -1,0 +1,29 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: medusa_yash_db
+      POSTGRES_USER: medusa_yash_user
+      POSTGRES_PASSWORD: root
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  medusa:
+    build: .
+    environment:
+      DATABASE_URL: postgres://medusa_yash_user:root@postgres:5432/medusa_yash_db
+      JWT_SECRET: supersecret
+      COOKIE_SECRET: supersecret
+    depends_on:
+      - postgres
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/usr/src/app
+    command: ["medusa", "develop"]
+
+volumes:
+  postgres_data:

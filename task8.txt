@@ -1,0 +1,7 @@
+docker files
+yash@yash-Lenovo-Legion-5-15IMH05:~/Task8/yash-medusa-store$ docker ps
+CONTAINER ID   IMAGE                      COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+3b40cea1e6fb   yash-medusa-store_medusa   "docker-entrypoint.s…"   58 seconds ago   Up 54 seconds   0.0.0.0:9000->9000/tcp, :::9000->9000/tcp   yash-medusa-store-medusa-1
+3d836f2ec6d4   postgres:13                "docker-entrypoint.s…"   58 seconds ago   Up 55 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   yash-medusa-store-postgres-1
+yash@yash-Lenovo-Legion-5-15IMH05:~/Task8/yash-medusa-store$ 
+
