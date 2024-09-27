@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: "us-east-1" # Update as per your region
   ECR_REPOSITORY: "medusa-ecr-repo"
-  CLUSTER_NAME: "medusa-cluster"
+  CLUSTER_NAME: "Yash-Cluster-8"
   SERVICE_NAME: "medusa-service"
   TASK_FAMILY: "medusa-task"
   ECS_SERVICE_ROLE_ARN: ${{ secrets.ECS_SERVICE_ROLE_ARN8 }}
